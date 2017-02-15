@@ -1,5 +1,5 @@
 /*
- * SPTry3.c
+ * main.c
  *
  * Created: 5/9/15 6:07:47 PM
  *  Author: Roger
@@ -14,6 +14,7 @@
 #include	"NRF24defs.h"
 #include	"timers.h"
 #include "ADC.h"
+#include "USART.h"
 
 
 
@@ -45,7 +46,7 @@ for (u8 i = 0; i < 5; i ++){	//silly light show as it starts up
 	_delay_ms(100);
 }	//end of light show
 PORTC = 0;
-
+    initUSART();
 
 ADC_Init();	//initialize ADC which includes enabling interrupt on conversion
 sei();
@@ -59,8 +60,11 @@ enable_PRX();		//This will set a bit in a variable that's in the NRF24_lib.c and
 initialize_NRF();
 set_ce;	//in test phase always on for PRX.  Will probably change this for battery conservation.
 Timer0_init();	//initialize mS timer which will be used to time debouncing of buttons
-Timer2_init();  //Timer2 will be used for the buzzer.
+//will check the 'awk' button on startup and not initialize Timer2 if the button is pressed.  This lets me 'run silent' by pressing the AWK button at startup.
+    if(PIND & 0x40){
+   Timer2_init();  //Timer2 will be used for the buzzer.
    
+    }
    
    while(1){   
 	
@@ -68,26 +72,60 @@ Timer2_init();  //Timer2 will be used for the buzzer.
 	if(check_Flag(RX_DR)){
 	
 	get_RX_Data (datain);	//this will dump the data into the array 'datain'
-	if(datain[0] & 0x80){		//if the Trap is Set
-		makeNoise();	//make some noise and turn on the alarm
-		led4_on;
-	}else{
-		led4_off;
-		shutUpAYouFace();
-		}		//end of what to do based on datain bit7, PIR status
-		if(datain[0] & 0x40){
-			led2_on;	//if low battery bit is set, turn on LED2
-	}else{
-		led2_off;	
-	}	//end of checking battery statu
+     /*
+    //RX data is a 3-byte array with the following data:
+        BB - raw ADC battery reading, multiply by .0313 to get voltage
+        CC - Counter that counts from 0-255 then rolls over, can use quantify dropped packets
+        DD - Distance.  This value * 32uS is the time between firing the transmitter and getting a response. DD/4.625 = distance.  Empty-trap value == 55.5
+        
+        */
+        //datain
+        
+        if(datain[0] < 215){
+            led2_on;	//if battery level from PTX indicates a battery below ~6.7V, turn on LED2
+        }else{
+            led2_off;
+        }	//end of checking battery status
+        
+    
+        
+        
+        if((datain[2] > 60)|| (datain[2] < 50)){		//if the bounced-back sonic signal isn't within the ~2" window of where I expect it
+            makeNoise();	//make some noise and turn on the alarm
+            led4_on;
+                }else{
+                    led4_off;
+                    shutUpAYouFace();
+		}		//end of what to do based on the ultrasonic distance.
+        
+
 
 	//making awk-pak with payload
 	dataout[0] = get_switch_status();	//get the current state of the buttons from function that's over in timer.c...It's with the timers since button debouncing is all done off hte millisecond timer.  Also the light switch status is read there. 
 	sendPayLoad(W_ACK_PAYLOAD, dataout, 2);
 	led5_tog;	//This LED is indication that we're talking.
-	//TODO...look at datain and drive LEDs/launch alarm accordingly
-	start_ADC_conv();	//This will have the ADC make two conversions, one for checking VIN for low battery and the other for whether or not the pot is high enough to enable the PWM...when both conversions are complete the ADC will call 'populate_dataout' and I'll get ready for the enxt round.
-	}
+  
+        
+        //this for loop through to printString is just for debugging right now...all of the overhead of printing makes this take ~18mS.  I will ultimately just use 'transmitByte' and have a Python script on the other end receive the data, calculate batteries based on ADC and
+    /*    for (int z = 0; z < 3; z ++){
+            printByte(datain[z]);
+            printString(" ");
+        }
+        printByte(getADCVal());
+        printString(" ");
+        printString("\n");
+      */
+        //this is what I want to dump out to a Python script...0x43, 0x41 and 0x53 are placeholders to identify the start of the packet (ASCII for cat).  After that I send the 3 bytes from the Trap and then the remote's battery voltage
+                transmitByte(0x43);
+                transmitByte(0x41);
+                transmitByte(0x54);
+
+        for (int z = 0; z < 3; z ++){
+            transmitByte(datain[z]);
+        }
+            transmitByte(getADCVal());
+    
+    } //end of what to do if teh data receive flag is set
 	
 
 

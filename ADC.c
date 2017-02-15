@@ -30,7 +30,9 @@ void start_ADC_conv (void){
 }
 
 
-
+u8 getADCVal(void){
+    return ADCH;
+}
 
 
 
@@ -42,14 +44,15 @@ ISR(ADC_vect){
 	}else if(ADCH < threshold2){
 		shut_r_down();
 	}else{
-		led1_on;	}	
+		led1_on;
+    }
 	}
 
 
 //will turn off the micro if the voltage is below threshold 2 to prevent drawing on an almost-dead battery.
 void shut_r_down(void){
 	for (int i = 0; i < 5; i++){
-		led1_tog;
+        led1_tog;
 		_delay_ms(400);
 	}
 	PORTD = 0;

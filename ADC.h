@@ -17,5 +17,8 @@
 void ADC_Init(void);
 void start_ADC_conv (void);
 void shut_r_down(void);		//will call this if battery voltage is detected to be below some threshold.
+u8 getADCVal(void);
+
+
 
 #endif /* ADC_H_ */

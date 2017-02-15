@@ -48,7 +48,7 @@ ISR(TIMER0_COMPA_vect){
 	}	//end of checking if there was a previous button press detected
 	if (0 == twofiftymsroll){
 		twofiftymsroll = 250;
-		start_ADC_conv();	//every 250mS read teh ADC
+		start_ADC_conv();	//every 250mS read the ADC
 		if(buzzerOn){
 			changeTone();	//This function will change the tone of the alarm...Will do this 4 times a second to start, may need to up it.
 		}
