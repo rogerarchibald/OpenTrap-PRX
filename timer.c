@@ -52,7 +52,6 @@ ISR(TIMER0_COMPA_vect){
 		if(buzzerOn){
 			changeTone();	//This function will change the tone of the alarm...Will do this 4 times a second to start, may need to up it.
 		}
-		
 	}
 }
 

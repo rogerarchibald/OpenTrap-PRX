@@ -29,14 +29,12 @@ u8 dataout [] = {0x25, 0xAA};	//just an array of random stuff for starters, stil
 
 
 
-//OOPS!. I had routed the lightswitch to PB2 which is Slave Select not...If this pin is configured as an input and driven low, the SPI bus shits the bed.  The work-around I'm going with now is to use
-//PB1 as the light switch.  The bad news here is that I'm going to lose TP1 and I've got to change some traces to make this happen.
 
 int main(void)
 {
 
 DDRB = 0x2D;		//All of portB = outputs with exception of PB1(lightswitch) and this is shorted to PB2, PB5 (SCK), PB6-7 (XTAL).
-/*PB0 = Chip Enable, PB1 = TP1(I lost TP1 because I had to make it the light switch input), PB3 = MOSI, PB4 = MISO, PB5 = SCK, PB6-7 = oscillator*/
+/*PB0 = Chip Enable, PB1 = light switch, PB2 = TP1, PB3 = MOSI, PB4 = MISO, PB5 = SCK, PB6-7 = oscillator*/
 DDRD |= 0x8E;	//PD7 = Chip Select Not, PD6-4 = buttons, PD3 = Buzzer, PD2 = power_kill, PD1 = TXO, PD0 = RXI 
 PORTD |= 0x04;	//Drive PD2 hi as this will control the drive for the LDO enable signal and needs to be on once the 'power-on' button is released to keep power. 
 DDRC |= 0x1F;	//PC0-PC4 == LED's, PC5 = Pot_in
@@ -66,6 +64,8 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
    
     }
    
+
+    
    while(1){   
 	
 	

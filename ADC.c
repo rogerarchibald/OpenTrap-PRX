@@ -6,14 +6,14 @@
  
  
  Want to set up the ADC as 8-bit, will left-align the results and drop the Low register...8-bits is plenty of resolution for my needs here and it's easier to deal with.
- In this first setup I've got a resistor divider on VIN such where Rtop = 100K and Rbottom = 47K so the divide by = /3.12.  7.2Vin/3.12 = 2.3V.  VCC = 3.3V 2.3/3.3 * 256 = 178.
+ In this first setup I've got a resistor divider on VIN such where Rtop = 715K and Rbot = 220k.  Voltage = ADC * .0183
  */ 
 
 
 #include "ADC.h"
 
-#define threshold1 139
-#define threshold2 122		//threshold1 is the level at which to turn on the low-battery indicator.  Threshold2 is critical low and will turn off micro.  Values of 139 and 122 correspond to 3.3 and 2.9v with a 220K -> 49K divider.  Will want to tweak values in future
+#define threshold1 180
+#define threshold2 158		//threshold1 is the level at which to turn on the low-battery indicator.  Threshold2 is critical low and will turn off micro.  Values of 180 and 158 correspond to 3.3 and 2.9v with a 715K -> 220K divider.
 
 void ADC_Init(void) {
 	

@@ -41,9 +41,9 @@
 #define led5_on	{PORTC |= 0x10;}
 #define led5_off	{PORTC &= ~(0x10);}
 #define led5_tog	{PORTC ^= 0x10;}		
-#define set_tp1	{PORTB |= 0x02;}
-#define clr_tp1 {PORTB &= ~(0x02);}	
-#define tog_tp1 {PORTB ^= 0x02;}
+#define set_tp1	{PORTB |= 0x04;}
+#define clr_tp1 {PORTB &= ~(0x04);}
+#define tog_tp1 {PORTB ^= 0x04;}
 /////////////More macros to come?
 
 //called in case PRX is defined in main.
