@@ -24,8 +24,7 @@
 #define	PRX
 
 u8 datain [MAX_PACKET_LENGTH];	//easy temp place to receive data.  	
-u8 dataout [] = {0x25, 0xAA};	//just an array of random stuff for starters, still trying to verify this works.
-
+u8 dataout [] = {0x25, 0xE2};	//First bit is a bitfield that will change depending on button/switch status as defined in comspec.  0xE2 is just there for funsies
 
 
 
@@ -77,7 +76,6 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
         BB - raw ADC battery reading, multiply by .0313 to get voltage
         CC - Counter that counts from 0-255 then rolls over, can use quantify dropped packets
         DD - Distance.  This value * 32uS is the time between firing the transmitter and getting a response. DD/4.625 = distance.  Empty-trap value == 55.5
-        
         */
         //datain
         
@@ -98,6 +96,7 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
                     shutUpAYouFace();
 		}		//end of what to do based on the ultrasonic distance.
         
+   
 
 
 	//making awk-pak with payload
@@ -106,16 +105,8 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
 	led5_tog;	//This LED is indication that we're talking.
   
         
-        //this for loop through to printString is just for debugging right now...all of the overhead of printing makes this take ~18mS.  I will ultimately just use 'transmitByte' and have a Python script on the other end receive the data, calculate batteries based on ADC and
-    /*    for (int z = 0; z < 3; z ++){
-            printByte(datain[z]);
-            printString(" ");
-        }
-        printByte(getADCVal());
-        printString(" ");
-        printString("\n");
-      */
-        //this is what I want to dump out to a Python script...0x43, 0x41 and 0x53 are placeholders to identify the start of the packet (ASCII for cat).  After that I send the 3 bytes from the Trap and then the remote's battery voltage
+ 
+        //this is what I want to dump out to a Python script...0x43, 0x41 and 0x53 are placeholders to identify the start of the packet (ASCII for cat).  After that I send the 4 bytes from the Trap and then the remote's battery voltage
                 transmitByte(0x43);
                 transmitByte(0x41);
                 transmitByte(0x54);
@@ -125,7 +116,7 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
         }
             transmitByte(getADCVal());
     
-    } //end of what to do if teh data receive flag is set
+    } //end of what to do if the data receive flag is set
 	
 
 

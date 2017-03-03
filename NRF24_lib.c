@@ -10,7 +10,7 @@
 #define	u8	uint8_t
 
 static u8 CFGValues = 0x7C;	//7C where I'm going to start this.  Two things that will be tweaked are: Bit0 which determines if we're PTX or PRX, this is determined in 'main.c'.  Also bit 1 is the powerup, have functions called PowerUp and PowerDn to control this.
-u8 Addy [] = {0x52, 0x6F, 0x67, 0x65, 0x72}; //Believe that as long as we're looking at only one TX/RX combo than only need one address
+u8 Addy [] = {0x72, 0x6F, 0x67, 0x65, 0x72}; //Believe that as long as we're looking at only one TX/RX combo than only need one address
 
 //this will only be called just prior to initializing the NRF in case 'PRF' has been defined in Main.
 void enable_PRX (void){
@@ -186,6 +186,9 @@ clr_ce;				//clear Chip Enable in case not already done.
 writeRegSing(CONFIG, CFGValues);	//initially powered down, CFGValues will be setup for either TX or RX by main depending on whether or not PRX is defined
 writeRegSing(SETUP_RETR, 0x77);	//2mS between retries, 7 total retries
 writeRegSing(RF_SETUP, 0x06);	//1MBPS, zero TX attenuation
+//writeRegSing(RF_SETUP, 0x04);	//1MBPS, -6dBm TX attenuation
+//writeRegSing(RF_SETUP, 0x02);	//1MBPS, -12dBm TX attenuation
+//writeRegSing(RF_SETUP, 0x00);	//1MBPS, -18dBm TX attenuation
 writeRegMult(RX_ADDR_P0, Addy, 5);
 writeRegMult(TX_ADDR, Addy, 5);		//Making TX and RX addresses the same
 writeRegSing(DYNPD, 0x01);	//enable Dynamic Payload for RX Pipe

@@ -62,7 +62,7 @@ void clear_Flag	(u8);
 //'Register' is the address of the required register defined in other library, *destination is a pointer to the address the data's going to, and size is how many bytes I need to read here.
 void readReg(u8 Register, u8* destination, u8 size);
 void writeRegMult(u8 Register, u8 * source, u8 size);	//This will be used when writing multiple bytes to a register
-void writRegSing(u8 Register, u8 data);	//use this when writing a single command to a register					
+void writeRegSing(u8 Register, u8 data);	//use this when writing a single command to a register
 
 //sengind and receiving payloads.  In sending will need to specify if it's writing the TX payload or the Auto_AWK payload.
 void sendPayLoad(u8 TXorAWK, u8* plsource, u8 size);

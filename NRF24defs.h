@@ -20,7 +20,7 @@
 #define	RF_SETUP	0x06
 #define STATUS		0x07
 #define	OBSERVE_TX	0x08
-#define	CD			0x09
+#define	RPD			0x09
 #define	RX_ADDR_P0	0x0A
 #define	RX_ADDR_P1	0x0B
 #define	RX_ADDR_P2	0x0C
