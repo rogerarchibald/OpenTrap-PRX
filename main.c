@@ -25,7 +25,7 @@
 
 u8 datain [MAX_PACKET_LENGTH];	//easy temp place to receive data.  	
 u8 dataout [] = {0x25, 0xE2};	//First bit is a bitfield that will change depending on button/switch status as defined in comspec.  0xE2 is just there for funsies
-
+u8 target = 55; //target is going to be the 'expected' distance back from teh trap.  This value/4.625 = distance in inches.  Eventually want to make this settable, right now just writing code to make it a variable...functions to set it to come.
 
 
 
@@ -88,7 +88,7 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
     
         
         
-        if((datain[2] > 60)|| (datain[2] < 50)){		//if the bounced-back sonic signal isn't within the ~2" window of where I expect it
+        if((datain[2] > (target +5))|| (datain[2] < (target-5))){		//if the bounced-back sonic signal isn't within the ~2" window of where I expect it
             makeNoise();	//make some noise and turn on the alarm
             led4_on;
                 }else{
@@ -106,7 +106,7 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
   
         
  
-        //this is what I want to dump out to a Python script...0x43, 0x41 and 0x53 are placeholders to identify the start of the packet (ASCII for cat).  After that I send the 4 bytes from the Trap and then the remote's battery voltage
+        //this is what I want to dump out to a Python script...0x43, 0x41 and 0x53 are placeholders to identify the start of the packet (ASCII for cat).  After that I send the 4 bytes from the Trap, the remote's battery voltage and 'target'
                 transmitByte(0x43);
                 transmitByte(0x41);
                 transmitByte(0x54);
@@ -115,6 +115,7 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
             transmitByte(datain[z]);
         }
             transmitByte(getADCVal());
+        transmitByte(target);
     
     } //end of what to do if the data receive flag is set
 	
