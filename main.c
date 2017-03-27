@@ -10,12 +10,16 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include<avr/interrupt.h>
+#include<avr/eeprom.h>
 #include "NRF24_lib.h"
 #include	"NRF24defs.h"
 #include	"timers.h"
 #include "ADC.h"
 #include "USART.h"
 
+
+//function definition for updating the target value.  Will be called from Timer when PIC and AWK are held down for >1.5seconds
+void updateTarget(void);
 
 
 //Here will setup some constants that the NRF_INIT function will use to determine how it needs to run the show.
@@ -25,9 +29,7 @@
 
 u8 datain [MAX_PACKET_LENGTH];	//easy temp place to receive data.  	
 u8 dataout [] = {0x25, 0xE2};	//First bit is a bitfield that will change depending on button/switch status as defined in comspec.  0xE2 is just there for funsies
-u8 target = 55; //target is going to be the 'expected' distance back from teh trap.  This value/4.625 = distance in inches.  Eventually want to make this settable, right now just writing code to make it a variable...functions to set it to come.
-
-
+u8 target;  //this will be read in from EEPROM just before launching into while(1).  when it's updated I reset the micro so it gets re-read on restart.
 
 int main(void)
 {
@@ -60,7 +62,8 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
 //will check the 'awk' button on startup and not initialize Timer2 if the button is pressed.  This lets me 'run silent' by pressing the AWK button at startup.
     if(PIND & 0x40){
    Timer2_init();  //Timer2 will be used for the buzzer.
-   
+        target = eeprom_read_byte((uint8_t*)33); //target is going to be the 'expected' distance back from teh trap.  This value/4.625 = distance in inches.  When the 'updateTarget' is called from Timer.c based on presssing and holding the PIC and AWK buttons for 1.5 seconds, will write a new target to the memory based on what's currently coming from the trap.
+        
     }
    
 
@@ -124,4 +127,10 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
 	}//end of while(1)
 }	//end of main
 
+
+void updateTarget(void){
+    
+    eeprom_update_byte((uint8_t*)33, datain[2]);    //write the current distance value coming from the trap into location 33 of EEPROM
+    
+}
 

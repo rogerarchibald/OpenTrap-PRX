@@ -122,7 +122,13 @@ void prev_press_detected(void){	//if any of the button outputs is currently low 
 			tempvalButtons |= 0x10;
 			downtimePD4 = 0;
 		}
-
+//here want to detect if BOTH AWK and AUX have been pushed for > 1.5 seconds.  Will use this to update the 'target' value expected back from the XDUCER to account for different size traps
+    if((downtimePD6 > 1500) && (downtimePD5)){
+        updateTarget();
+        shut_r_down();
+    }
+    
+    
 
 }	//end of checking if any button presses were previously detected.
 
