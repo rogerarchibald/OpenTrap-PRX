@@ -62,9 +62,10 @@ Timer0_init();	//initialize mS timer which will be used to time debouncing of bu
 //will check the 'awk' button on startup and not initialize Timer2 if the button is pressed.  This lets me 'run silent' by pressing the AWK button at startup.
     if(PIND & 0x40){
    Timer2_init();  //Timer2 will be used for the buzzer.
+    }
         target = eeprom_read_byte((uint8_t*)33); //target is going to be the 'expected' distance back from teh trap.  This value/4.625 = distance in inches.  When the 'updateTarget' is called from Timer.c based on presssing and holding the PIC and AWK buttons for 1.5 seconds, will write a new target to the memory based on what's currently coming from the trap.
         
-    }
+    
    
 
     
